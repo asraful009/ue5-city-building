@@ -1,0 +1,28 @@
+{
+	"configurations": [
+		{
+			"name": "ZMREditor Editor Linux Development (ZMR)",
+			"compilerPath": "/home/pavel/.local/share/ue/Linux_Unreal_Engine_5.4.4/Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/Linux_x64/v22_clang-16.0.6-centos7/x86_64-unknown-linux-gnu/bin/clang++",
+			"compilerArgs": [
+				"-isysroot",
+				"/home/pavel/.local/share/ue/Linux_Unreal_Engine_5.4.4/Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/Linux_x64/v22_clang-16.0.6-centos7/x86_64-unknown-linux-gnu"
+			],
+			"cStandard": "c17",
+			"cppStandard": "c++20",
+			"intelliSenseMode": "clang-x64",
+			"compileCommands": "/home/pavel/projects/ue/ue5-city-building/.vscode/compileCommands_ZMR.json"
+		},
+		{
+			"name": "Linux",
+			"compilerPath": "/home/pavel/.local/share/ue/Linux_Unreal_Engine_5.4.4/Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/Linux_x64/v22_clang-16.0.6-centos7/x86_64-unknown-linux-gnu/bin/clang++",
+			"compilerArgs": [
+				"-isysroot",
+				"/home/pavel/.local/share/ue/Linux_Unreal_Engine_5.4.4/Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/Linux_x64/v22_clang-16.0.6-centos7/x86_64-unknown-linux-gnu"
+			],
+			"cStandard": "c17",
+			"cppStandard": "c++20",
+			"intelliSenseMode": "clang-x64",
+			"compileCommands": "/home/pavel/projects/ue/ue5-city-building/.vscode/compileCommands_Default.json"
+		}
+	]
+}
