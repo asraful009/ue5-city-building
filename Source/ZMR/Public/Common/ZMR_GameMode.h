@@ -22,18 +22,13 @@ public:
 
 protected:
 private:
-  /* =========================
-     TIMER
-  ========================== */
-
   FTimerHandle DayTimerHandle;
-
-  void HandleDayAdvance();
-
-  float GetDurationFromSpeed(EZMR_GameSpeedEnum Speed) const;
 
 public:
   AZMR_GameMode();
+
+  UFUNCTION(BlueprintCallable, Category="ZMR|GameSpeed")
+  void SetGameSpeed(const EZMR_GameSpeedEnum NewSpeed);
 
 protected:
   virtual void BeginPlay() override;
@@ -41,8 +36,7 @@ protected:
   virtual void Tick(float DeltaTime) override;
 
 public:
-  UFUNCTION(BlueprintCallable)
-  void SetGameSpeed(const EZMR_GameSpeedEnum NewSpeed);
+
 
 private:
   // ------------TIME MANAGEMENT------------

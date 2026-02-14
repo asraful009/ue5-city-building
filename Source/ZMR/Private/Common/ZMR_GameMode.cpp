@@ -11,6 +11,28 @@ AZMR_GameMode::AZMR_GameMode()
   CurrentSpeed = EZMR_GameSpeedEnum::Normal;
 }
 
+void AZMR_GameMode::SetGameSpeed(const EZMR_GameSpeedEnum NewSpeed)
+{
+  CurrentSpeed = NewSpeed;
+
+  const float Duration = GetDurationFromSpeed(NewSpeed);
+  if (Duration < 0.f)
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Game Paused"));
+    return;
+  }
+  GetWorldTimerManager().ClearTimer(DayTimerHandle);
+  GetWorldTimerManager().SetTimer(
+    DayTimerHandle,
+    this,
+    &AZMR_GameMode::HandleDayAdvance,
+    Duration,
+    true
+  );
+
+  UE_LOG(LogTemp, Warning, TEXT("Game Speed Changed"));
+}
+
 void AZMR_GameMode::BeginPlay()
 {
   Super::BeginPlay();
@@ -22,29 +44,6 @@ void AZMR_GameMode::BeginPlay()
 void AZMR_GameMode::Tick(float DeltaTime)
 {
   Super::Tick(DeltaTime);
-}
-
-void AZMR_GameMode::SetGameSpeed(const EZMR_GameSpeedEnum NewSpeed)
-{
-  CurrentSpeed = NewSpeed;
-
-  GetWorldTimerManager().ClearTimer(DayTimerHandle);
-  const float Duration = GetDurationFromSpeed(NewSpeed);
-  if (Duration < 0.f)
-  {
-    UE_LOG(LogTemp, Warning, TEXT("Game Paused"));
-    return;
-  }
-
-  GetWorldTimerManager().SetTimer(
-    DayTimerHandle,
-    this,
-    &AZMR_GameMode::HandleDayAdvance,
-    Duration,
-    true
-  );
-
-  UE_LOG(LogTemp, Warning, TEXT("Game Speed Changed"));
 }
 
 void AZMR_GameMode::HandleDayAdvance() const
@@ -64,9 +63,9 @@ float AZMR_GameMode::GetDurationFromSpeed(const EZMR_GameSpeedEnum Speed) const
   case EZMR_GameSpeedEnum::Normal:
     return 2.f;
   case EZMR_GameSpeedEnum::Fast:
-    return 1.0f;
+    return 1.f;
   case EZMR_GameSpeedEnum::VeryFast:
-    return 0.25f;
+    return 0.15f;
   case EZMR_GameSpeedEnum::Pause:
   default:
     return -1.f;

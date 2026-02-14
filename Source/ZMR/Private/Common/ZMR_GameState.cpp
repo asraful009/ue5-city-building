@@ -43,4 +43,20 @@ void AZMR_GameState::AdvanceDay()
     Month = 1;
     Year++;
   }
+  UE_LOG(LogTemp, Warning, TEXT("%s"), *GetDate());
+  OnDateChanged.Broadcast();
+}
+
+FString AZMR_GameState::GetMonthShortName() const
+{
+  if (Month < 1 || Month > 12)
+  {
+    return TEXT("Invalid Date");
+  }
+  return Months[Month];
+}
+
+FString AZMR_GameState::GetDate() const
+{
+  return FString::Printf(TEXT("%s %02d, %04d"), *GetMonthShortName(), Day, Year);
 }
