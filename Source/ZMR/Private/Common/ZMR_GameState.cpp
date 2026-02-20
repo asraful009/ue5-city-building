@@ -43,7 +43,7 @@ void AZMR_GameState::AdvanceDay()
     Month = 1;
     Year++;
   }
-  UE_LOG(LogTemp, Warning, TEXT("%s"), *GetDate());
+  // UE_LOG(LogTemp, Warning, TEXT("%s"), *GetDate());
   OnDateChanged.Broadcast(GetDate());
 }
 
