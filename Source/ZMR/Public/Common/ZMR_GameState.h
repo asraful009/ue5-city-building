@@ -6,7 +6,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "ZMR_GameState.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDateChanged);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDateChanged, const FString&, NewDate);
 
 /**
  * 
