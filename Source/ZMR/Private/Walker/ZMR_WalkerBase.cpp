@@ -41,7 +41,7 @@ void AZMR_WalkerBase::SetTargetBuilding(AActor* InBuilding)
 {
   TargetBuilding = InBuilding;
 
-  if (!TargetBuilding.IsValid())
+  if (TargetBuilding.IsValid())
   {
     MoveToLocation(TargetBuilding->GetActorLocation());
   }
@@ -61,6 +61,10 @@ void AZMR_WalkerBase::StopWalker()
 
 void AZMR_WalkerBase::OnReachedDestination()
 {
+  if (WalkerState != EZMR_WalkerStateEnum::MovingToTarget)
+  {
+    return;
+  }
   StopWalker();
   WalkerState = EZMR_WalkerStateEnum::Working;
 
@@ -86,20 +90,8 @@ void AZMR_WalkerBase::UpdateMovement(float DeltaTime)
                   0,
                   2.f);
   }
-  if (Distance < 100.f)
+  if (Distance < AcceptanceRadius)
   {
     OnReachedDestination();
-  }
-
-  if (bDebugPath)
-  {
-    DrawDebugLine(GetWorld(),
-                  GetActorLocation(),
-                  CurrentTargetLocation,
-                  FColor::Green,
-                  false,
-                  -1,
-                  0,
-                  2.f);
   }
 }

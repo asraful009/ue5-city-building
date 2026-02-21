@@ -21,7 +21,9 @@ public:
   /* ===== Debug ===== */
   UPROPERTY(EditAnywhere)
   bool bDebugPath = false;
-
+  
+  UPROPERTY(EditAnywhere)
+  float AcceptanceRadius = 75.f;
 protected:
 private:
   FVector CurrentTargetLocation;
