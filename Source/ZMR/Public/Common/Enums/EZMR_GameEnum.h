@@ -17,3 +17,11 @@ enum class EZMR_WalkerStateEnum : uint8
   Working UMETA(DisplayName="Working"),
   ReturningHome UMETA(DisplayName="ReturningHome")
 };
+
+UENUM(BlueprintType)
+enum class EBuildingType : uint8
+{
+  Residential UMETA(DisplayName="Residential"),
+  Service UMETA(DisplayName="Service"),
+  Production UMETA(DisplayName="Production"),
+};
