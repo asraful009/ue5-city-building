@@ -42,18 +42,18 @@ public:
   // Called to bind functionality to input
   virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-  /* ===== Movement ===== */
+  /* ===== Target Building ===== */
 
+  UFUNCTION(BlueprintCallable)
+  void SetTargetBuilding(AActor* InBuilding);
+
+  /* ===== Movement ===== */
   UFUNCTION(BlueprintCallable)
   void MoveToLocation(const FVector& TargetLocation);
 
   UFUNCTION(BlueprintCallable)
   void StopWalker();
 
-  /* ===== Target Building ===== */
-
-  UFUNCTION(BlueprintCallable)
-  void SetTargetBuilding(AActor* InBuilding);
 
   UFUNCTION()
   void OnReachedDestination();
