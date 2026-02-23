@@ -50,4 +50,5 @@ void AZMR_BuildingBase::SetGridPosition(FIntPoint NewGridPosition)
 
 FIntPoint AZMR_BuildingBase::GetGridPosition() const
 {
+  return FIntPoint::ZeroValue;
 }
