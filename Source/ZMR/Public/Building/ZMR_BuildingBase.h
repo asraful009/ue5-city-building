@@ -19,28 +19,25 @@ public:
   TObjectPtr<UStaticMeshComponent> BuildingMesh;
 
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Building")
-  int32 BuildingId;
-
-  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Building")
   int32 Level;
 
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Building")
   int32 Cost;
 
-  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Building|Grid")
-  int32 GridWidth = 1;
-
-  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Building|Grid")
-  int32 GridHeight = 1;
-
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Building|Grid")
+  FIntPoint FootprintSize = FIntPoint(1,1);
+  
 protected:
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Building")
   EBuildingType BuildingType;
 
 private:
   UPROPERTY(VisibleAnywhere, Category="Building")
+  int32 BuildingId;
+
+  UPROPERTY(VisibleAnywhere, Category="Building")
   bool bIsPlaced;
-  
+
   UPROPERTY(VisibleAnywhere, Category="Building|Grid")
   FIntPoint GridPosition = FIntPoint::ZeroValue;
 
@@ -67,10 +64,16 @@ public:
 
   UFUNCTION(BlueprintCallable)
   virtual void UpgradeBuilding();
-  
+
   UFUNCTION(BlueprintCallable)
   void SetGridPosition(FIntPoint NewGridPosition);
 
   UFUNCTION(BlueprintPure)
-  FIntPoint GetGridPosition() const;
+  FIntPoint GetGridPosition() const { return GridPosition; }
+
+  UFUNCTION(BlueprintPure)
+  TArray<FIntPoint> GetOccupiedTiles() const;
+  
+  UFUNCTION(BlueprintPure)
+  int32 GetBuildingId() const { return BuildingId; }
 };

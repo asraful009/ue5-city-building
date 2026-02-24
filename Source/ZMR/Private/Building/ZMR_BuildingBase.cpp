@@ -3,6 +3,8 @@
 
 #include "Building/ZMR_BuildingBase.h"
 
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 AZMR_BuildingBase::AZMR_BuildingBase()
 {
@@ -20,6 +22,21 @@ AZMR_BuildingBase::AZMR_BuildingBase()
 void AZMR_BuildingBase::BeginPlay()
 {
   Super::BeginPlay();
+  TArray<AActor*> Buildings;
+  UGameplayStatics::GetAllActorsOfClass(GetWorld(), AZMR_BuildingBase::StaticClass(), Buildings);
+  int32 BuildingIdMax = 1;
+  for (AActor* Actor : Buildings)
+  {
+    if (AZMR_BuildingBase* Building = Cast<AZMR_BuildingBase>(Actor))
+    {
+      if (Building->BuildingId >= BuildingIdMax)
+      {
+        BuildingIdMax = Building->BuildingId + 1;
+      }
+    }
+  }
+  BuildingId = BuildingIdMax;
+  UE_LOG(LogTemp, Warning, TEXT("Building ID: %i"), BuildingId);
 }
 
 // Called every frame
@@ -30,6 +47,8 @@ void AZMR_BuildingBase::Tick(float DeltaTime)
 
 void AZMR_BuildingBase::OnPlaced()
 {
+  bIsPlaced = true;
+  
 }
 
 void AZMR_BuildingBase::OnDestroyedBuilding()
@@ -48,7 +67,15 @@ void AZMR_BuildingBase::SetGridPosition(FIntPoint NewGridPosition)
 {
 }
 
-FIntPoint AZMR_BuildingBase::GetGridPosition() const
+TArray<FIntPoint> AZMR_BuildingBase::GetOccupiedTiles() const
 {
-  return FIntPoint::ZeroValue;
+  TArray<FIntPoint> OccupiedTiles;
+  for (int32 X = 0; X < FootprintSize.X; X++)
+  {
+    for (int32 Y = 0; Y < FootprintSize.Y; Y++)
+    {
+      OccupiedTiles.Add(FIntPoint(GridPosition.X + X, GridPosition.Y + Y));
+    }
+  }
+  return OccupiedTiles;
 }
