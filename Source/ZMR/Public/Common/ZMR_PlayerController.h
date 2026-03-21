@@ -6,6 +6,9 @@
 #include "GameFramework/PlayerController.h"
 #include "ZMR_PlayerController.generated.h"
 class UInputMappingContext;
+class UInputAction;
+struct FInputActionValue;
+
 /**
  * 
  */
@@ -18,6 +21,10 @@ protected:
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
   TObjectPtr<UInputMappingContext> IMC_CityBuilder;
 
+  // Input Actions
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+  TObjectPtr<UInputAction> IA_Move;
+  
 private:
   
   // Camera scroll speed
@@ -40,5 +47,7 @@ private:
 
   // Camera edge scroll
   void HandleEdgeScroll(float DeltaTime);
+  
+  void Move(const FInputActionValue& Value);
   
 };
