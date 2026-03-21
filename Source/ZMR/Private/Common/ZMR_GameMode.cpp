@@ -4,6 +4,8 @@
 #include "Common/ZMR_GameMode.h"
 
 #include "Common/ZMR_GameState.h"
+#include "Common/ZMR_PlayerCameraPawn.h"
+#include "Common/ZMR_PlayerController.h"
 
 AZMR_GameMode::AZMR_GameMode()
 {
@@ -29,6 +31,9 @@ void AZMR_GameMode::SetGameSpeed(const EZMR_GameSpeedEnum NewSpeed)
     Duration,
     true
   );
+
+  DefaultPawnClass = AZMR_PlayerCameraPawn::StaticClass();
+  PlayerControllerClass = AZMR_PlayerController::StaticClass();
 
   UE_LOG(LogTemp, Warning, TEXT("Game Speed Changed"));
 }
