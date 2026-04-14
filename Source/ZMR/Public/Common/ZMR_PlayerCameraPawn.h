@@ -6,11 +6,25 @@
 #include "GameFramework/Pawn.h"
 #include "ZMR_PlayerCameraPawn.generated.h"
 
+class UFloatingPawnMovement;
+class UCameraComponent;
+class USpringArmComponent;
+
 UCLASS()
 class ZMR_API AZMR_PlayerCameraPawn : public APawn
 {
   GENERATED_BODY()
-
+  
+protected:
+  // UPROPERTY(VisibleAnywhere)
+  // TWeakObjectPtr<USpringArmComponent> SpringArm;
+  //
+  // UPROPERTY(VisibleAnywhere)
+  // TWeakObjectPtr<UCameraComponent> Camera;
+  //
+  // UPROPERTY(VisibleAnywhere)
+  // TWeakObjectPtr<UFloatingPawnMovement> Movement;
+  
 public:
   // Sets default values for this pawn's properties
   AZMR_PlayerCameraPawn();
@@ -30,4 +44,6 @@ private:
   void MoveForward(float Value);
   void MoveRight(float Value);
   void Zoom(float Value);
+  
+  
 };

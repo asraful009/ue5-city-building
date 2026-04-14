@@ -3,10 +3,27 @@
 
 #include "Common/ZMR_PlayerCameraPawn.h"
 
+#include "Camera/CameraComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
+#include "GameFramework/SpringArmComponent.h"
+
 // Sets default values
 AZMR_PlayerCameraPawn::AZMR_PlayerCameraPawn()
 {
   // Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+
+  // RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+
+  // SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+  // SpringArm->SetupAttachment(RootComponent);
+  // SpringArm->TargetArmLength = 800.f;
+  // SpringArm->bEnableCameraLag = true;
+  //
+  // Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+  // Camera->SetupAttachment(SpringArm);
+  //
+  // Movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Movement"));
+  // Movement->MaxSpeed = 1200.f;
   PrimaryActorTick.bCanEverTick = true;
 }
 
