@@ -130,7 +130,13 @@ void AZMR_PlayerController::Move(const FInputActionValue& Value)
   Forward.Normalize();
   Right.Normalize();
 
-  const FVector MoveDir = Forward * MoveValue.Y + Right * MoveValue.X;
-  CameraPawn->AddActorWorldOffset(MoveDir * Speed * DeltaTime, true);
+  FVector MoveDir = Forward * MoveValue.Y + Right * MoveValue.X;
+  MoveDir = MoveDir.GetClampedToMaxSize(1.0f);
+  FVector Current = CameraPawn->GetActorLocation();
+  FVector Target  = Current + MoveDir * Speed * DeltaTime;
+
+  FVector Smooth = FMath::VInterpTo(Current, Target, DeltaTime, 25.0f);
+
+  CameraPawn->SetActorLocation(Smooth);
   
 }
