@@ -13,12 +13,17 @@ AZMR_PlayerController::AZMR_PlayerController()
   bShowMouseCursor = true;
   bEnableClickEvents = true;
   bEnableMouseOverEvents = true;
-  
 }
 
 void AZMR_PlayerController::BeginPlay()
 {
   Super::BeginPlay();
+
+  FInputModeGameAndUI InputMode;
+  InputMode.SetHideCursorDuringCapture(false);
+  InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+  SetInputMode(InputMode);
+
   // Get Local Player subsystem
   if (const TObjectPtr<ULocalPlayer> LocalPlayer = GetLocalPlayer())
   {
@@ -31,6 +36,7 @@ void AZMR_PlayerController::BeginPlay()
         Subsystem->AddMappingContext(IMC_CityBuilder, 0);
       }
     }
+
   }
 }
 
@@ -56,27 +62,26 @@ void AZMR_PlayerController::FocusCameraOnSelected()
 
 void AZMR_PlayerController::HandleEdgeScroll(const float DeltaTime)
 {
-  if (GetPawn() == nullptr)
-  {
-    UE_LOG(LogTemp, Warning, TEXT("No Player Controller"));
-    return;
-  } 
-  // UE_LOG(LogTemp, Warning, TEXT("CameraPawn: [%s]"), *GetPawn()->GetName());
-  TObjectPtr<AZMR_PlayerCameraPawn> CameraPawn 
-    = Cast<AZMR_PlayerCameraPawn>(GetPawn());
+  const TObjectPtr<AZMR_PlayerCameraPawn> CameraPawn = Cast<AZMR_PlayerCameraPawn>(GetPawn());
   if (CameraPawn == nullptr)
   {
     return;
   }
-  
-  float MouseX, MouseY;
-  GetMousePosition(MouseX, MouseY);
-  
-  // UE_LOG(LogTemp, Warning, TEXT("MouseX: [%f, %f]"), MouseX, MouseY);
-  
-  int32 SizeX, SizeY;
+
+  int32 SizeX = 0;
+  int32 SizeY = 0;
   GetViewportSize(SizeX, SizeY);
-  // UE_LOG(LogTemp, Warning, TEXT("Viewport: [%d, %d]"), SizeX, SizeY);
+  if (SizeX <= 0 || SizeY <= 0)
+  {
+    return;
+  }
+  
+  float MouseX = 0.f;
+  float MouseY = 0.f;
+  if (!GetMousePosition(MouseX, MouseY))
+  {
+    return;
+  }
   
   FVector MoveDir = FVector::ZeroVector;
 
@@ -90,7 +95,14 @@ void AZMR_PlayerController::HandleEdgeScroll(const float DeltaTime)
   else if (MouseY >= SizeY - EdgeThreshold)
     MoveDir -= CameraPawn->GetActorForwardVector();
 
-  CameraPawn->AddActorWorldOffset(MoveDir * EdgeScrollSpeed * DeltaTime);
+  MoveDir.Z = 0.f;
+  if (MoveDir.IsNearlyZero())
+  {
+    return;
+  }
+
+  MoveDir.Normalize();
+  CameraPawn->AddActorWorldOffset(MoveDir * EdgeScrollSpeed * DeltaTime, true);
 }
 
 void AZMR_PlayerController::Move(const FInputActionValue& Value)
@@ -100,7 +112,6 @@ void AZMR_PlayerController::Move(const FInputActionValue& Value)
     return;
   }
   const FVector2D MoveValue = Value.Get<FVector2D>();
-  UE_LOG(LogTemp, Warning, TEXT("Input X=%f Y=%f"), MoveValue.X, MoveValue.Y);
   const TObjectPtr<AZMR_PlayerCameraPawn> CameraPawn 
     = Cast<AZMR_PlayerCameraPawn>(GetPawn());
   if (CameraPawn == nullptr || GetWorld() == nullptr)
@@ -112,7 +123,6 @@ void AZMR_PlayerController::Move(const FInputActionValue& Value)
   
   FVector Forward = CameraPawn->GetActorForwardVector();
   FVector Right   = CameraPawn->GetActorRightVector();
-  UE_LOG(LogTemp, Warning, TEXT("Forward: [%s], Right: [%s]"), *Forward.ToString(), *Right.ToString());
   // Remove vertical tilt
   Forward.Z = 0.f;
   Right.Z   = 0.f;

@@ -25,13 +25,16 @@ protected:
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
   TObjectPtr<UInputAction> IA_Move;
   
+  // Edge threshold in pixels
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+  float EdgeThreshold = 100.f;
+  
 private:
   
   // Camera scroll speed
   float EdgeScrollSpeed = 2500.f;
 
-  // Edge threshold in pixels
-  float EdgeThreshold = 20.f;
+
   
   
 public:
