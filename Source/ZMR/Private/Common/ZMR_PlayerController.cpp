@@ -13,6 +13,7 @@ AZMR_PlayerController::AZMR_PlayerController()
   bShowMouseCursor = true;
   bEnableClickEvents = true;
   bEnableMouseOverEvents = true;
+  PrimaryActorTick.bCanEverTick = true;
 }
 
 void AZMR_PlayerController::BeginPlay()
@@ -52,6 +53,18 @@ void AZMR_PlayerController::SetupInputComponent()
 void AZMR_PlayerController::Tick(float DeltaTime)
 {
   Super::Tick(DeltaTime);
+  // Handle keyboard priority timer
+  if (KeyboardMoveTimer > 0.f)
+  {
+    KeyboardMoveTimer -= DeltaTime;
+    bIsKeyboardMoving = true;
+  }
+  else
+  {
+    bIsKeyboardMoving = false;
+  }
+
+  // Only edge scroll if keyboard NOT active
   if (!bIsKeyboardMoving)
   {
     HandleEdgeScroll(DeltaTime);
@@ -64,7 +77,7 @@ void AZMR_PlayerController::FocusCameraOnSelected()
 
 void AZMR_PlayerController::HandleEdgeScroll(const float DeltaTime)
 {
-  const TObjectPtr<AZMR_PlayerCameraPawn> CameraPawn = Cast<AZMR_PlayerCameraPawn>(GetPawn());
+  const TObjectPtr<AZMR_PlayerCameraPawn> CameraPawn = GetPawn<AZMR_PlayerCameraPawn>();
   if (CameraPawn == nullptr)
   {
     return;
@@ -103,13 +116,11 @@ void AZMR_PlayerController::HandleEdgeScroll(const float DeltaTime)
     return;
   }
 
-  MoveDir.Normalize();
-
-  MoveDir = MoveDir.GetClampedToMaxSize(1.0f);
+  MoveDir = MoveDir.GetSafeNormal();
   FVector Current = CameraPawn->GetActorLocation();
-  FVector Target = Current + MoveDir * EdgeScrollSpeed * DeltaTime;
+  FVector Target = Current + MoveDir * Speed * DeltaTime;
 
-  FVector Smooth = FMath::VInterpTo(Current, Target, DeltaTime, 25.0f);
+  FVector Smooth = FMath::VInterpTo(Current, Target, DeltaTime, MoveSmoothSpeed);
 
   CameraPawn->SetActorLocation(Smooth);
 }
@@ -121,36 +132,38 @@ void AZMR_PlayerController::Move(const FInputActionValue& Value)
     return;
   }
   const FVector2D MoveValue = Value.Get<FVector2D>();
-  bIsKeyboardMoving = !MoveValue.IsNearlyZero();
-  if (!bIsKeyboardMoving)
+  
+  // ✅ EARLY RETURN if no input
+  if (MoveValue.IsNearlyZero())
   {
     return;
   }
-  const TObjectPtr<AZMR_PlayerCameraPawn> CameraPawn
-    = Cast<AZMR_PlayerCameraPawn>(GetPawn());
+
+  // mark keyboard active
+  bIsKeyboardMoving = true;
+  KeyboardMoveTimer = 0.1f; // buffer time
+
+  const TObjectPtr<AZMR_PlayerCameraPawn> CameraPawn = GetPawn<AZMR_PlayerCameraPawn>();
   if (CameraPawn == nullptr || GetWorld() == nullptr)
   {
     return;
   }
-  const float Speed = 2000.0f;
   const float DeltaTime = GetWorld()->GetDeltaSeconds();
+  const FVector Forward = CameraPawn->GetActorForwardVector();
+  const FVector Right   = CameraPawn->GetActorRightVector();
+  const FVector Current = CameraPawn->GetActorLocation();
+  FVector MoveDir =
+      Forward * MoveValue.Y +
+      Right   * MoveValue.X;
 
-  FVector Forward = CameraPawn->GetActorForwardVector();
-  FVector Right = CameraPawn->GetActorRightVector();
-  // Remove vertical tilt
-  Forward.Z = 0.f;
-  Right.Z = 0.f;
+  MoveDir.Z = 0.f;
+  MoveDir = MoveDir.GetSafeNormal();
+  MoveDir.Z = 0.f;
+  MoveDir = MoveDir.GetSafeNormal();
 
-  Forward.Normalize();
-  Right.Normalize();
+  const FVector Target = Current + MoveDir * Speed * DeltaTime;
 
-  FVector MoveDir = Forward * MoveValue.Y + Right * MoveValue.X;
-  MoveDir = MoveDir.GetClampedToMaxSize(1.0f);
-  FVector Current = CameraPawn->GetActorLocation();
-  FVector Target = Current + MoveDir * Speed * DeltaTime;
-
-  FVector Smooth = FMath::VInterpTo(Current, Target, DeltaTime, 25.0f);
+  const FVector Smooth = FMath::VInterpTo(Current, Target, DeltaTime, MoveSmoothSpeed);
 
   CameraPawn->SetActorLocation(Smooth);
-  bIsKeyboardMoving = false;
 }

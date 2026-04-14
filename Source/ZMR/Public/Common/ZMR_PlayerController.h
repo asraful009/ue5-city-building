@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "ZMR_PlayerController.generated.h"
+class AZMR_PlayerCameraPawn;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
@@ -29,13 +30,21 @@ protected:
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
   float EdgeThreshold = 100.f;
   
+  UPROPERTY(EditAnywhere, Category="Input|Camera")
+  float MoveSmoothSpeed = 25.0f;
+  
+  UPROPERTY(EditAnywhere, Category="Input|Movement")
+  float Speed = 2000.0f;
+  
 private:
   
   // Camera scroll speed
   float EdgeScrollSpeed = 2500.f;
 
+  // State
   bool bIsKeyboardMoving = false;
-  
+  float KeyboardMoveTimer = 0.f;  
+
   
 public:
   AZMR_PlayerController();
