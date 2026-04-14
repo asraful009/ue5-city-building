@@ -34,7 +34,7 @@ private:
   // Camera scroll speed
   float EdgeScrollSpeed = 2500.f;
 
-
+  bool bIsKeyboardMoving = false;
   
   
 public:
