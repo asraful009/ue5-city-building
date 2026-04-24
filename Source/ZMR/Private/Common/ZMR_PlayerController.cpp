@@ -46,7 +46,11 @@ void AZMR_PlayerController::SetupInputComponent()
   if (const TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent
     = Cast<UEnhancedInputComponent>(InputComponent))
   {
-    EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AZMR_PlayerController::Move);
+    EnhancedInputComponent->BindAction(IA_Move, 
+      ETriggerEvent::Triggered, this, &AZMR_PlayerController::Move);
+    
+    EnhancedInputComponent->BindAction(IA_Zoom, 
+      ETriggerEvent::Triggered, this, &AZMR_PlayerController::Zoom);
   }
 }
 
@@ -132,7 +136,7 @@ void AZMR_PlayerController::Move(const FInputActionValue& Value)
     return;
   }
   const FVector2D MoveValue = Value.Get<FVector2D>();
-  
+
   // ✅ EARLY RETURN if no input
   if (MoveValue.IsNearlyZero())
   {
@@ -150,11 +154,11 @@ void AZMR_PlayerController::Move(const FInputActionValue& Value)
   }
   const float DeltaTime = GetWorld()->GetDeltaSeconds();
   const FVector Forward = CameraPawn->GetActorForwardVector();
-  const FVector Right   = CameraPawn->GetActorRightVector();
+  const FVector Right = CameraPawn->GetActorRightVector();
   const FVector Current = CameraPawn->GetActorLocation();
   FVector MoveDir =
-      Forward * MoveValue.Y +
-      Right   * MoveValue.X;
+    Forward * MoveValue.Y +
+    Right * MoveValue.X;
 
   MoveDir.Z = 0.f;
   MoveDir = MoveDir.GetSafeNormal();
@@ -166,4 +170,14 @@ void AZMR_PlayerController::Move(const FInputActionValue& Value)
   const FVector Smooth = FMath::VInterpTo(Current, Target, DeltaTime, MoveSmoothSpeed);
 
   CameraPawn->SetActorLocation(Smooth);
+}
+
+void AZMR_PlayerController::Zoom(const FInputActionValue& Value)
+{
+  const float ZoomValue = Value.Get<float>();
+  UE_LOG(LogTemp, Log, TEXT("Zoom: %f"), ZoomValue);
+  const TObjectPtr<AZMR_PlayerCameraPawn> CameraPawn = 
+    Cast<AZMR_PlayerCameraPawn>(GetPawn());
+  if (!CameraPawn) return;
+  CameraPawn->HandleZoom(ZoomValue);
 }

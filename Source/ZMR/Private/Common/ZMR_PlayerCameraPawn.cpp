@@ -12,18 +12,21 @@ AZMR_PlayerCameraPawn::AZMR_PlayerCameraPawn()
 {
   // Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 
-  // RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+  RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
-  // SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-  // SpringArm->SetupAttachment(RootComponent);
-  // SpringArm->TargetArmLength = 800.f;
-  // SpringArm->bEnableCameraLag = true;
-  //
-  // Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-  // Camera->SetupAttachment(SpringArm);
-  //
-  // Movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Movement"));
-  // Movement->MaxSpeed = 1200.f;
+  SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+  SpringArm->SetupAttachment(RootComponent);
+  SpringArm->TargetArmLength = 1200.f;
+  SpringArm->bDoCollisionTest = false;
+  SpringArm->bUsePawnControlRotation = false;
+  
+  // Top-down angle
+  SpringArm->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
+  // Camera
+  Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+  Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+
+  Camera->bUsePawnControlRotation = false;
   PrimaryActorTick.bCanEverTick = true;
 }
 
@@ -45,6 +48,21 @@ void AZMR_PlayerCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInp
   Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
+void AZMR_PlayerCameraPawn::HandleZoom(float Value)
+{
+  if (!SpringArm) return;
+  float NewLength = SpringArm->TargetArmLength - (Value * ZoomSpeed);
+
+  NewLength = FMath::Clamp(NewLength, MinZoom, MaxZoom);
+
+  SpringArm->TargetArmLength = FMath::FInterpTo(
+    SpringArm->TargetArmLength,
+    NewLength,
+    GetWorld()->GetDeltaSeconds(),
+    10.f
+  );
+}
+
 void AZMR_PlayerCameraPawn::MoveForward(float Value)
 {
 }
@@ -53,6 +71,3 @@ void AZMR_PlayerCameraPawn::MoveRight(float Value)
 {
 }
 
-void AZMR_PlayerCameraPawn::Zoom(float Value)
-{
-}

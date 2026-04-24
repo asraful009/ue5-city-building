@@ -16,14 +16,20 @@ class ZMR_API AZMR_PlayerCameraPawn : public APawn
   GENERATED_BODY()
   
 protected:
-  // UPROPERTY(VisibleAnywhere)
-  // TWeakObjectPtr<USpringArmComponent> SpringArm;
-  //
-  // UPROPERTY(VisibleAnywhere)
-  // TWeakObjectPtr<UCameraComponent> Camera;
-  //
-  // UPROPERTY(VisibleAnywhere)
-  // TWeakObjectPtr<UFloatingPawnMovement> Movement;
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
+  TObjectPtr<USpringArmComponent> SpringArm;
+
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
+  TObjectPtr<UCameraComponent> Camera;
+  
+  UPROPERTY(EditAnywhere, Category="Camera")
+  float ZoomSpeed = 200.f;
+
+  UPROPERTY(EditAnywhere, Category="Camera")
+  float MinZoom = 500.f;
+
+  UPROPERTY(EditAnywhere, Category="Camera")
+  float MaxZoom = 2000.f;
   
 public:
   // Sets default values for this pawn's properties
@@ -40,10 +46,11 @@ public:
   // Called to bind functionality to input
   virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
   
+  void HandleZoom(float Value);
+
 private:
   void MoveForward(float Value);
   void MoveRight(float Value);
-  void Zoom(float Value);
   
   
 };

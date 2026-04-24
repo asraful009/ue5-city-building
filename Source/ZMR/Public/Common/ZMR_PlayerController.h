@@ -26,6 +26,11 @@ protected:
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
   TObjectPtr<UInputAction> IA_Move;
   
+  // Input Actions
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+  TObjectPtr<UInputAction> IA_Zoom;
+  
+  
   // Edge threshold in pixels
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
   float EdgeThreshold = 100.f;
@@ -61,5 +66,7 @@ private:
   void HandleEdgeScroll(float DeltaTime);
   
   void Move(const FInputActionValue& Value);
+  
+  void Zoom(const FInputActionValue& Value);
   
 };
