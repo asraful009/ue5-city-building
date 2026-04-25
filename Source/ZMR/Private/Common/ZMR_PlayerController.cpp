@@ -46,14 +46,35 @@ void AZMR_PlayerController::SetupInputComponent()
   if (const TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent
     = Cast<UEnhancedInputComponent>(InputComponent))
   {
-    EnhancedInputComponent->BindAction(IA_Move, 
-      ETriggerEvent::Triggered, this, &AZMR_PlayerController::Move);
+    EnhancedInputComponent->BindAction(IA_Move,
+                                       ETriggerEvent::Triggered, 
+                                       this, 
+                                       &AZMR_PlayerController::Move);
+
+    EnhancedInputComponent->BindAction(IA_Zoom,
+                                       ETriggerEvent::Triggered, 
+                                       this, 
+                                       &AZMR_PlayerController::Zoom);
+
+    EnhancedInputComponent->BindAction(IA_Rotate,
+                                       ETriggerEvent::Triggered, 
+                                       this, 
+                                       &AZMR_PlayerController::RotateCamera);
+
+    EnhancedInputComponent->BindAction(IA_MouseHold,
+                                       ETriggerEvent::Started, 
+                                       this, 
+                                       &AZMR_PlayerController::MouseDragStart);
+
+    EnhancedInputComponent->BindAction(IA_MouseHold,
+                                       ETriggerEvent::Completed, 
+                                       this, 
+                                       &AZMR_PlayerController::MouseDragStop);
     
-    EnhancedInputComponent->BindAction(IA_Zoom, 
-      ETriggerEvent::Triggered, this, &AZMR_PlayerController::Zoom);
-    
-    EnhancedInputComponent->BindAction(IA_Rotate, 
-      ETriggerEvent::Triggered, this, &AZMR_PlayerController::RotateCamera);
+    EnhancedInputComponent->BindAction(IA_MouseDrag,
+                                   ETriggerEvent::Triggered, 
+                                   this, 
+                                   &AZMR_PlayerController::MouseDragMove);
   }
 }
 
@@ -178,7 +199,7 @@ void AZMR_PlayerController::Move(const FInputActionValue& Value)
 void AZMR_PlayerController::Zoom(const FInputActionValue& Value)
 {
   const float ZoomValue = Value.Get<float>();
-  const TObjectPtr<AZMR_PlayerCameraPawn> CameraPawn = 
+  const TObjectPtr<AZMR_PlayerCameraPawn> CameraPawn =
     Cast<AZMR_PlayerCameraPawn>(GetPawn());
   if (!CameraPawn) return;
   CameraPawn->HandleZoom(ZoomValue);
@@ -187,15 +208,63 @@ void AZMR_PlayerController::Zoom(const FInputActionValue& Value)
 void AZMR_PlayerController::RotateCamera(const FInputActionValue& Value)
 {
   const FVector2D Input = Value.Get<FVector2D>();
-  const TObjectPtr<AZMR_PlayerCameraPawn> CameraPawn = 
+  const TObjectPtr<AZMR_PlayerCameraPawn> CameraPawn =
     Cast<AZMR_PlayerCameraPawn>(GetPawn());
-  
+
   if (!CameraPawn || !CameraPawn->IsSpringArmInitialized()) return;
-  UE_LOG(LogTemp, Warning, TEXT("Rotate Camera"));
   // Yaw (left/right)
   CameraPawn->AddActorWorldRotation(FRotator(0.f, Input.X, 0.f));
-  
+
   FRotator NewRot = CameraPawn->GetSpringArmRotator();
   NewRot.Pitch = FMath::Clamp(NewRot.Pitch + Input.Y, -80.f, -10.f);
   CameraPawn->SetSpringArmRotator(NewRot);
+}
+
+void AZMR_PlayerController::MouseDragStart(const FInputActionValue& Value)
+{
+  bIsMouseHolding = true;
+  UE_LOG(LogTemp, Log, TEXT("Mouse Hold Start: %s"), bIsMouseHolding? TEXT("true") : TEXT("false"));
+}
+
+void AZMR_PlayerController::MouseDragStop(const FInputActionValue& Value)
+{
+  bIsMouseHolding = false;
+  UE_LOG(LogTemp, Log, TEXT("Mouse Hold Stop: %s"), bIsMouseHolding? TEXT("true") : TEXT("false"));
+
+}
+
+void AZMR_PlayerController::MouseDragMove(const FInputActionValue& Value)
+{
+  if (!bIsMouseHolding)
+  {
+    return;
+  }
+  UE_LOG(LogTemp, Log, TEXT("Mouse Drag:) %s"), *Value.ToString());
+  const FVector2D MouseDelta = Value.Get<FVector2D>();
+
+  if (MouseDelta.IsNearlyZero())
+  {
+    return;
+  }
+  
+  const TObjectPtr<AZMR_PlayerCameraPawn> CameraPawn = GetPawn<AZMR_PlayerCameraPawn>();
+  if (!CameraPawn) return;
+
+  const float DeltaTime = GetWorld()->GetDeltaSeconds();
+  
+  // Invert for RTS-style drag (grab world and move it)
+  FVector MoveDir =
+    (-CameraPawn->GetActorRightVector() * MouseDelta.X) +
+    (-CameraPawn->GetActorForwardVector() * MouseDelta.Y);
+  
+  MoveDir.Z = 0.f;
+  
+  // 🔥 IMPORTANT: do NOT normalize (we want pixel-accurate movement)
+  FVector Current = CameraPawn->GetActorLocation();
+  
+  FVector Target = Current + MoveDir * DragSpeed;
+
+  FVector Smooth = FMath::VInterpTo(Current, Target, DeltaTime, MoveSmoothSpeed);
+
+  CameraPawn->SetActorLocation(Smooth);
 }

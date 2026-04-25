@@ -33,6 +33,13 @@ protected:
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
   TObjectPtr<UInputAction> IA_Rotate;
   
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+  TObjectPtr<UInputAction> IA_MouseHold;
+  
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+  TObjectPtr<UInputAction> IA_MouseDrag;
+  
+  
   // Edge threshold in pixels
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
   float EdgeThreshold = 100.f;
@@ -43,6 +50,8 @@ protected:
   UPROPERTY(EditAnywhere, Category="Input|Movement")
   float Speed = 2000.0f;
   
+  float DragSpeed = 25.f;
+  
 private:
   
   // Camera scroll speed
@@ -51,6 +60,8 @@ private:
   // State
   bool bIsKeyboardMoving = false;
   float KeyboardMoveTimer = 0.f;  
+  
+  bool bIsMouseHolding = false;
 
   
 public:
@@ -71,5 +82,10 @@ private:
   
   void Zoom(const FInputActionValue& Value);
   void RotateCamera(const FInputActionValue& Value);
+  
+  
+  void MouseDragStart(const FInputActionValue& Value);
+  void MouseDragStop(const FInputActionValue& Value);
+  void MouseDragMove(const FInputActionValue& Value);
   
 };
