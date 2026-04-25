@@ -30,6 +30,8 @@ protected:
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
   TObjectPtr<UInputAction> IA_Zoom;
   
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+  TObjectPtr<UInputAction> IA_Rotate;
   
   // Edge threshold in pixels
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
@@ -68,5 +70,6 @@ private:
   void Move(const FInputActionValue& Value);
   
   void Zoom(const FInputActionValue& Value);
+  void RotateCamera(const FInputActionValue& Value);
   
 };

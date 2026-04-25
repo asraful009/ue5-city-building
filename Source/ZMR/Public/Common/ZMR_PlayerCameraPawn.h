@@ -47,6 +47,9 @@ public:
   virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
   
   void HandleZoom(float Value);
+  bool IsSpringArmInitialized() const;
+  FRotator GetSpringArmRotator() const;
+  void SetSpringArmRotator(const FRotator NewRotator) const;
 
 private:
   void MoveForward(float Value);

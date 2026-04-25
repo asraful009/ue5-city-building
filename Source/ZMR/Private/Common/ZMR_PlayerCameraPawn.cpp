@@ -63,6 +63,33 @@ void AZMR_PlayerCameraPawn::HandleZoom(float Value)
   );
 }
 
+bool AZMR_PlayerCameraPawn::IsSpringArmInitialized() const
+{
+  if (!SpringArm)
+  {
+    return false;
+  }
+  return true;
+}
+
+FRotator AZMR_PlayerCameraPawn::GetSpringArmRotator() const
+{
+  if (!SpringArm)
+  {
+    return FRotator();
+  }
+  return SpringArm->GetRelativeRotation();
+}
+
+void AZMR_PlayerCameraPawn::SetSpringArmRotator(const FRotator NewRotator) const
+{
+  if (!SpringArm)
+  {
+    return;
+  }
+  SpringArm->SetRelativeRotation(NewRotator);
+}
+
 void AZMR_PlayerCameraPawn::MoveForward(float Value)
 {
 }

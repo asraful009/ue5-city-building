@@ -51,6 +51,9 @@ void AZMR_PlayerController::SetupInputComponent()
     
     EnhancedInputComponent->BindAction(IA_Zoom, 
       ETriggerEvent::Triggered, this, &AZMR_PlayerController::Zoom);
+    
+    EnhancedInputComponent->BindAction(IA_Zoom, 
+      ETriggerEvent::Triggered, this, &AZMR_PlayerController::RotateCamera);
   }
 }
 
@@ -175,9 +178,24 @@ void AZMR_PlayerController::Move(const FInputActionValue& Value)
 void AZMR_PlayerController::Zoom(const FInputActionValue& Value)
 {
   const float ZoomValue = Value.Get<float>();
-  UE_LOG(LogTemp, Log, TEXT("Zoom: %f"), ZoomValue);
   const TObjectPtr<AZMR_PlayerCameraPawn> CameraPawn = 
     Cast<AZMR_PlayerCameraPawn>(GetPawn());
   if (!CameraPawn) return;
   CameraPawn->HandleZoom(ZoomValue);
+}
+
+void AZMR_PlayerController::RotateCamera(const FInputActionValue& Value)
+{
+  const FVector2D Input = Value.Get<FVector2D>();
+  const TObjectPtr<AZMR_PlayerCameraPawn> CameraPawn = 
+    Cast<AZMR_PlayerCameraPawn>(GetPawn());
+  
+  if (!CameraPawn || !CameraPawn->IsSpringArmInitialized()) return;
+  UE_LOG(LogTemp, Warning, TEXT("Rotate Camera"));
+  // Yaw (left/right)
+  CameraPawn->AddActorWorldRotation(FRotator(0.f, Input.X, 0.f));
+  
+  FRotator NewRot = CameraPawn->GetSpringArmRotator();
+  NewRot.Pitch = FMath::Clamp(NewRot.Pitch + Input.Y, -80.f, -10.f);
+  CameraPawn->SetSpringArmRotator(NewRot);
 }
