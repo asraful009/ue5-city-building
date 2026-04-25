@@ -52,7 +52,7 @@ void AZMR_PlayerController::SetupInputComponent()
     EnhancedInputComponent->BindAction(IA_Zoom, 
       ETriggerEvent::Triggered, this, &AZMR_PlayerController::Zoom);
     
-    EnhancedInputComponent->BindAction(IA_Zoom, 
+    EnhancedInputComponent->BindAction(IA_Rotate, 
       ETriggerEvent::Triggered, this, &AZMR_PlayerController::RotateCamera);
   }
 }
