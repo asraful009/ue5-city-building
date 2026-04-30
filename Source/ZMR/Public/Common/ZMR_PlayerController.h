@@ -39,10 +39,12 @@ protected:
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
   TObjectPtr<UInputAction> IA_MouseDrag;
   
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+  TObjectPtr<UInputAction> IA_MouseSelect;
   
   // Edge threshold in pixels
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
-  float EdgeThreshold = 100.f;
+  float EdgeThreshold = 10.f;
   
   UPROPERTY(EditAnywhere, Category="Input|Camera")
   float MoveSmoothSpeed = 25.0f;
@@ -50,7 +52,8 @@ protected:
   UPROPERTY(EditAnywhere, Category="Input|Movement")
   float Speed = 2000.0f;
   
-  float DragSpeed = 25.f;
+  UPROPERTY(EditAnywhere, Category="Input|Camera")
+  float DragSpeed = 1.f;
   
 private:
   
@@ -63,6 +66,13 @@ private:
   
   bool bIsMouseHolding = false;
 
+  
+  // For smoothing
+  FVector2D DragStartMousePos = FVector2D::ZeroVector;
+  FVector DragStartCameraPawnPos = FVector::ZeroVector;
+  
+  
+  TWeakObjectPtr<AZMR_PlayerCameraPawn> CameraPawnRef;
   
 public:
   AZMR_PlayerController();
@@ -87,5 +97,7 @@ private:
   void MouseDragStart(const FInputActionValue& Value);
   void MouseDragStop(const FInputActionValue& Value);
   void MouseDragMove(const FInputActionValue& Value);
+  
+  void MouseSelectObject();
   
 };
