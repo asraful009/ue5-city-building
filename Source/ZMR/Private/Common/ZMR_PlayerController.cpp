@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
+#include "Common/ZMR_ObjectSelectInterface.h"
 
 AZMR_PlayerController::AZMR_PlayerController()
 {
@@ -271,9 +272,46 @@ void AZMR_PlayerController::MouseSelectObject()
       Hit);
   if (!bHit)
   {
+    MouseDeSelectedObject();
     return;
   }
-  AActor* SelectedActor = Hit.GetActor();
-  if (!SelectedActor) return;
-  UE_LOG(LogTemp, Warning, TEXT("SelectedActor: %s"), *SelectedActor->GetName())
+  if (const TObjectPtr<AActor> HitActor = Hit.GetActor())
+  {
+    MouseSelectedObject(HitActor); // 👈 THIS is what you missed
+  }
+  else
+  {
+    MouseDeSelectedObject();
+  }
+}
+
+void AZMR_PlayerController::MouseSelectedObject(const TObjectPtr<AActor> NewSelectedObject)
+{
+  if (NewSelectedObject == MouseSelectedActorRef.Get())
+  {
+    return;
+  }
+  if (MouseSelectedActorRef.IsValid() 
+    && MouseSelectedActorRef->Implements<UZMR_ObjectSelectInterface>())
+  {
+    IZMR_ObjectSelectInterface::Execute_OnDeselected(MouseSelectedActorRef.Get());
+    MouseSelectedActorRef.Reset();
+  }
+  
+  if (NewSelectedObject 
+    && NewSelectedObject->Implements<UZMR_ObjectSelectInterface>())
+  {
+    MouseSelectedActorRef = NewSelectedObject;
+    IZMR_ObjectSelectInterface::Execute_OnSelected(MouseSelectedActorRef.Get());
+  }
+}
+
+void AZMR_PlayerController::MouseDeSelectedObject()
+{
+  if (MouseSelectedActorRef.IsValid() 
+    && MouseSelectedActorRef->Implements<UZMR_ObjectSelectInterface>())
+  {
+    IZMR_ObjectSelectInterface::Execute_OnDeselected(MouseSelectedActorRef.Get());
+    MouseSelectedActorRef.Reset();
+  }
 }

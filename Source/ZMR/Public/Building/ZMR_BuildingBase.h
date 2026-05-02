@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Common/ZMR_ObjectSelectInterface.h"
 #include "GameFramework/Actor.h"
 #include "ZMR_BuildingBase.generated.h"
 
@@ -10,7 +11,7 @@ enum class EBuildingType : uint8;
 class AZMR_WalkerBase;
 
 UCLASS()
-class ZMR_API AZMR_BuildingBase : public AActor
+class ZMR_API AZMR_BuildingBase : public AActor, public IZMR_ObjectSelectInterface
 {
   GENERATED_BODY()
 
@@ -76,4 +77,8 @@ public:
   
   UFUNCTION(BlueprintPure)
   int32 GetBuildingId() const { return BuildingId; }
+  
+  
+  virtual void OnSelected_Implementation() override;
+  virtual void OnDeselected_Implementation() override;
 };

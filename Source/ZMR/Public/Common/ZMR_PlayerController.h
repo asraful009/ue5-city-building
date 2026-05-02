@@ -74,6 +74,8 @@ private:
   
   TWeakObjectPtr<AZMR_PlayerCameraPawn> CameraPawnRef;
   
+  TWeakObjectPtr<AActor> MouseSelectedActorRef;
+  
 public:
   AZMR_PlayerController();
   
@@ -99,5 +101,8 @@ private:
   void MouseDragMove(const FInputActionValue& Value);
   
   void MouseSelectObject();
+  
+  void MouseSelectedObject(const TObjectPtr<AActor> NewSelectedObject);
+  void MouseDeSelectedObject();
   
 };

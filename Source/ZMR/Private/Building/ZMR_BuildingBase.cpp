@@ -79,3 +79,15 @@ TArray<FIntPoint> AZMR_BuildingBase::GetOccupiedTiles() const
   }
   return OccupiedTiles;
 }
+
+void AZMR_BuildingBase::OnSelected_Implementation()
+{
+  IZMR_ObjectSelectInterface::OnSelected_Implementation();
+  UE_LOG(LogTemp, Warning, TEXT("Building ID [ %i ] : Selected"), BuildingId);
+}
+
+void AZMR_BuildingBase::OnDeselected_Implementation()
+{
+  IZMR_ObjectSelectInterface::OnDeselected_Implementation();
+  UE_LOG(LogTemp, Warning, TEXT("Building ID [ %i ] : DeSelected"), BuildingId);
+}
