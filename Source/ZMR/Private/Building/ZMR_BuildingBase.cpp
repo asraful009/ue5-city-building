@@ -13,6 +13,8 @@ AZMR_BuildingBase::AZMR_BuildingBase()
 
   BuildingMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BuildingMesh"));
   RootComponent = BuildingMesh;
+  // Optional: set collision / physics
+  BuildingMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
   bIsPlaced = false;
   Level = 1;
@@ -36,7 +38,20 @@ void AZMR_BuildingBase::BeginPlay()
     }
   }
   BuildingId = BuildingIdMax;
+  
+    
+  UE_LOG(LogTemp, Warning, TEXT("Actor Name: %s"), *GetName());
+  UE_LOG(LogTemp, Warning, TEXT("Class: %s"), *GetClass()->GetName());
+
+  UE_LOG(LogTemp, Warning, TEXT("BuildingMesh: %p"), BuildingMesh.Get());
   UE_LOG(LogTemp, Warning, TEXT("Building ID: %i"), BuildingId);
+  
+  if (BuildingMesh && NormalMaterial)
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Setting Normal Material for Building ID: %i"), BuildingId);
+    BuildingMesh->SetMaterial(0, NormalMaterial);
+  }
+
 }
 
 // Called every frame
@@ -83,11 +98,19 @@ TArray<FIntPoint> AZMR_BuildingBase::GetOccupiedTiles() const
 void AZMR_BuildingBase::OnSelected_Implementation()
 {
   IZMR_ObjectSelectInterface::OnSelected_Implementation();
+  if (BuildingMesh && NormalMaterial)
+  {
+    BuildingMesh->SetMaterial(0, SelectedMaterial);
+  }
   UE_LOG(LogTemp, Warning, TEXT("Building ID [ %i ] : Selected"), BuildingId);
 }
 
 void AZMR_BuildingBase::OnDeselected_Implementation()
 {
   IZMR_ObjectSelectInterface::OnDeselected_Implementation();
+  if (BuildingMesh && SelectedMaterial)
+  {
+    BuildingMesh->SetMaterial(0, NormalMaterial);
+  }
   UE_LOG(LogTemp, Warning, TEXT("Building ID [ %i ] : DeSelected"), BuildingId);
 }

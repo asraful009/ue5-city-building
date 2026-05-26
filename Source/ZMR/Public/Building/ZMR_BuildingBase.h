@@ -28,6 +28,12 @@ public:
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Building|Grid")
   FIntPoint FootprintSize = FIntPoint(1,1);
   
+  UPROPERTY(EditDefaultsOnly, Category="Building|Material")
+  TObjectPtr<UMaterialInterface> NormalMaterial;
+
+  UPROPERTY(EditDefaultsOnly, Category="Building|Material")
+  TObjectPtr<UMaterialInterface> SelectedMaterial;
+  
 protected:
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Building")
   EBuildingType BuildingType;
