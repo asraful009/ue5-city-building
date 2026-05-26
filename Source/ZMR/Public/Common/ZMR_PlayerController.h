@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "ZMR_PlayerController.generated.h"
 class AZMR_PlayerCameraPawn;
+class AZMR_WalkerBase;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
@@ -71,10 +72,14 @@ private:
   FVector2D DragStartMousePos = FVector2D::ZeroVector;
   FVector DragStartCameraPawnPos = FVector::ZeroVector;
   
-  
+  UPROPERTY()
   TWeakObjectPtr<AZMR_PlayerCameraPawn> CameraPawnRef;
   
+  UPROPERTY()
   TWeakObjectPtr<AActor> MouseSelectedActorRef;
+  
+  UPROPERTY()
+  TWeakObjectPtr<AZMR_WalkerBase> LocalWalkerActorRef;
   
 public:
   AZMR_PlayerController();

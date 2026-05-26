@@ -8,6 +8,8 @@
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "Common/ZMR_ObjectSelectInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "Walker/ZMR_WalkerBase.h"
 
 AZMR_PlayerController::AZMR_PlayerController()
 {
@@ -40,6 +42,19 @@ void AZMR_PlayerController::BeginPlay()
     }
   }
   CameraPawnRef = GetPawn<AZMR_PlayerCameraPawn>();
+
+  TArray<AActor*> Temp;
+  UGameplayStatics::GetAllActorsOfClass(GetWorld(), AZMR_WalkerBase::StaticClass(), Temp);
+
+  for (AActor* Actor : Temp)
+  {
+     AZMR_WalkerBase* Walker = Cast<AZMR_WalkerBase>(Actor);
+     if (Walker)
+     {
+       LocalWalkerActorRef = Walker;
+       break;
+     };
+  }
 }
 
 void AZMR_PlayerController::SetupInputComponent()
@@ -303,6 +318,10 @@ void AZMR_PlayerController::MouseSelectedObject(const TObjectPtr<AActor> NewSele
   {
     MouseSelectedActorRef = NewSelectedObject;
     IZMR_ObjectSelectInterface::Execute_OnSelected(MouseSelectedActorRef.Get());
+    if (LocalWalkerActorRef.IsValid())
+    {
+      LocalWalkerActorRef->SetTargetBuilding(MouseSelectedActorRef.Get());
+    }
   }
 }
 
