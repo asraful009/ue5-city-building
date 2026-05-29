@@ -14,4 +14,10 @@ class ZMR_API AZMR_WalkerBaseAIController : public AAIController
 {
 	GENERATED_BODY()
 	
+public:
+	virtual void BeginPlay() override;
+	virtual void OnPossess(APawn* InPawn) override;
+    
+	UFUNCTION()
+	void OnPathFailed(FAIRequestID RequestID, EPathFollowingResult::Type Result);
 };

@@ -25,6 +25,9 @@ public:
   
   UPROPERTY(EditAnywhere)
   float AcceptanceRadius = 75.f;
+  
+
+  
 protected:
 private:
   UPROPERTY()
@@ -62,6 +65,13 @@ public:
   void StopWalker();
 
 
+  // Add to public section
+  UFUNCTION(BlueprintCallable)
+  void DebugNavMeshAtLocation(const FVector& Location);
+
+  UFUNCTION(BlueprintCallable)
+  bool IsLocationOnNavMesh(const FVector& Location);
+  
 private:
   
   UFUNCTION()
@@ -70,4 +80,7 @@ private:
   // Bound function to handle when navigation finishes
   UFUNCTION()
   void OnMoveCompleted(struct FAIRequestID RequestID, EPathFollowingResult::Type Result);
+  
+  void CheckNavMeshAvailability();
+
 };
