@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Navigation/PathFollowingComponent.h"
 #include "ZMR_WalkerBase.generated.h"
 
 enum class EZMR_WalkerStateEnum : uint8;
@@ -20,13 +21,15 @@ public:
 
   /* ===== Debug ===== */
   UPROPERTY(EditAnywhere)
-  bool bDebugPath = false;
+  bool bDebugPath = true;
   
   UPROPERTY(EditAnywhere)
   float AcceptanceRadius = 75.f;
 protected:
 private:
+  UPROPERTY()
   FVector CurrentTargetLocation;
+  UPROPERTY()
   TWeakObjectPtr<AActor> TargetBuilding;
 
 public:
@@ -36,6 +39,8 @@ public:
 protected:
   // Called when the game starts or when spawned
   virtual void BeginPlay() override;
+  
+  virtual void PossessedBy(AController* NewController) override;
 
 public:
   // Called every frame
@@ -57,9 +62,12 @@ public:
   void StopWalker();
 
 
+private:
+  
   UFUNCTION()
   void OnReachedDestination();
-
-private:
-  void UpdateMovement(float DeltaTime);
+  
+  // Bound function to handle when navigation finishes
+  UFUNCTION()
+  void OnMoveCompleted(struct FAIRequestID RequestID, EPathFollowingResult::Type Result);
 };
