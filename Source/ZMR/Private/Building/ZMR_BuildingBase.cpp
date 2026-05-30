@@ -67,7 +67,7 @@ void AZMR_BuildingBase::Tick(float DeltaTime)
       GetActorLocation() + FVector(0,0,150),
        *Label,
       nullptr,
-      FColor::FromHex("#077A7D"),
+      FColor::FromHex("#A5CF83"),
       0.f,
       true
     );
