@@ -53,19 +53,48 @@ void AZMR_WalkerBase::Tick(float DeltaTime)
 {
   Super::Tick(DeltaTime);
   // Debug: draw line from pawn to target
-  if (bDebugPath && WalkerState == EZMR_WalkerStateEnum::MovingToTarget)
+  if (bDebugPath)
   {
-    DrawDebugLine(GetWorld(),
-                  GetActorLocation(),
-                  CurrentTargetLocation,
-                  FColor::Green, false, -1, 0, 2.f);
+    DrawDebugString(
+      GetWorld(),
+      GetActorLocation() + FVector(0,0,150),
+       FString::Printf(
+          TEXT("%d: %s"),
+          GetUniqueID(),
+          *GetName()
+        ),
+      nullptr,
+      FColor::FromHex("#FF9900FF"),
+      0.f,
+      true
+    );
+    if (WalkerState == EZMR_WalkerStateEnum::MovingToTarget)
+    {
+      DrawDebugLine(GetWorld(),
+                    GetActorLocation(),
+                    CurrentTargetLocation,
+                    FColor::Green, false, -1, 0, 2.f);
     
-    DrawDebugCircle(
+      DrawDebugCircle(
+            GetWorld(),
+            GetActorLocation(),
+            AcceptanceRadius,
+            32,
+            FColor::Green,
+            false,          // NOT persistent (important)
+            0.f,            // lifetime = 0 means only this frame
+            0,
+            2.f,
+            FVector(1,0,0),
+            FVector(0,1,0),
+            false
+        );
+      DrawDebugCircle(
           GetWorld(),
-          GetActorLocation(),
+          CurrentTargetLocation,
           AcceptanceRadius,
           32,
-          FColor::Green,
+          FColor::Red,
           false,          // NOT persistent (important)
           0.f,            // lifetime = 0 means only this frame
           0,
@@ -74,20 +103,7 @@ void AZMR_WalkerBase::Tick(float DeltaTime)
           FVector(0,1,0),
           false
       );
-    DrawDebugCircle(
-        GetWorld(),
-        CurrentTargetLocation,
-        AcceptanceRadius,
-        32,
-        FColor::Red,
-        false,          // NOT persistent (important)
-        0.f,            // lifetime = 0 means only this frame
-        0,
-        2.f,
-        FVector(1,0,0),
-        FVector(0,1,0),
-        false
-    );
+    }
   }
 }
 

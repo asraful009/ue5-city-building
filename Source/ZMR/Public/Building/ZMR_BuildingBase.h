@@ -34,6 +34,9 @@ public:
   UPROPERTY(EditDefaultsOnly, Category="Building|Material")
   TObjectPtr<UMaterialInterface> SelectedMaterial;
   
+  UPROPERTY(EditAnywhere, Category="Debug")
+  bool bDrawDebugInfo = true;
+
 protected:
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Building")
   EBuildingType BuildingType;

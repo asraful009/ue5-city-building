@@ -9,7 +9,8 @@
 AZMR_BuildingBase::AZMR_BuildingBase()
 {
   // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-  PrimaryActorTick.bCanEverTick = false; // buildings don't need Tick usually
+  PrimaryActorTick.bCanEverTick = true;
+  PrimaryActorTick.bStartWithTickEnabled = true;
 
   BuildingMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BuildingMesh"));
   RootComponent = BuildingMesh;
@@ -38,13 +39,7 @@ void AZMR_BuildingBase::BeginPlay()
     }
   }
   BuildingId = BuildingIdMax;
-  
-    
-  UE_LOG(LogTemp, Warning, TEXT("Actor Name: %s"), *GetName());
-  UE_LOG(LogTemp, Warning, TEXT("Class: %s"), *GetClass()->GetName());
 
-  UE_LOG(LogTemp, Warning, TEXT("BuildingMesh: %p"), BuildingMesh.Get());
-  UE_LOG(LogTemp, Warning, TEXT("Building ID: %i"), BuildingId);
   
   if (BuildingMesh && NormalMaterial)
   {
@@ -58,6 +53,25 @@ void AZMR_BuildingBase::BeginPlay()
 void AZMR_BuildingBase::Tick(float DeltaTime)
 {
   Super::Tick(DeltaTime);
+
+  if (bDrawDebugInfo)
+  {
+    const FString Label = FString::Printf(
+      TEXT("UID: %d\nID: %d\nName: %s"),
+      GetUniqueID(),
+      BuildingId,
+      *GetName()
+    );
+    DrawDebugString(
+      GetWorld(),
+      GetActorLocation() + FVector(0,0,150),
+       *Label,
+      nullptr,
+      FColor::FromHex("#077A7D"),
+      0.f,
+      true
+    );
+  }
 }
 
 void AZMR_BuildingBase::OnPlaced()
