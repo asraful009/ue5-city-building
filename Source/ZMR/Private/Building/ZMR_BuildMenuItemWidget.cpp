@@ -7,11 +7,10 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 
-void UZMR_BuildMenuItemWidget::SetItemData(const FZMR_BuildUIMenuItem& Item, FName InRowName)
+void UZMR_BuildMenuItemWidget::SetItemData(const FZMR_BuildUIMenuItem& Item)
 {
 
   CachedItem = Item;
-  RowName = InRowName;
 
   if (!CachedItem.BuildingName.IsEmpty())
   {

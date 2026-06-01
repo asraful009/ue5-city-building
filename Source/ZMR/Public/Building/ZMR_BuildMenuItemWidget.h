@@ -18,7 +18,7 @@ class ZMR_API UZMR_BuildMenuItemWidget : public UUserWidget
 {
   GENERATED_BODY()
 public:
-  void SetItemData(const FZMR_BuildUIMenuItem& Item, FName InRowName);
+  void SetItemData(const FZMR_BuildUIMenuItem& Item);
 
 protected:
   UPROPERTY(meta = (BindWidget))

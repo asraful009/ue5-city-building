@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "ZMR_PlayerController.generated.h"
+class UZMR_BuildMenuWidget;
 class AZMR_PlayerCameraPawn;
 class AZMR_WalkerBase;
 class UInputMappingContext;
@@ -55,6 +56,9 @@ protected:
   
   UPROPERTY(EditAnywhere, Category="Input|Camera")
   float DragSpeed = 1.f;
+  
+  UPROPERTY(EditAnywhere, Category="UI|Building")
+  TSubclassOf<UZMR_BuildMenuWidget> BuildMenuClass;
   
 private:
   

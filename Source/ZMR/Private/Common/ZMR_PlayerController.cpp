@@ -7,6 +7,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
+#include "Blueprint/UserWidget.h"
+#include "Building/ZMR_BuildMenuWidget.h"
 #include "Common/ZMR_ObjectSelectInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Walker/ZMR_WalkerBase.h"
@@ -55,7 +57,10 @@ void AZMR_PlayerController::BeginPlay()
        break;
      };
   }
-}
+  
+  auto Menu = CreateWidget<UZMR_BuildMenuWidget>(GetWorld(), BuildMenuClass);
+  Menu->AddToViewport();
+}                         
 
 void AZMR_PlayerController::SetupInputComponent()
 {
