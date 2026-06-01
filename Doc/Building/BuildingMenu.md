@@ -1,3 +1,32 @@
+
+# UE5 Building Menu Item Structs
+`FZMR_ResourceStack` and `FZMR_BuildUIMenuItem` are the two main structs used for managing building menu items in the game.
+create a data table for it. 
+
+```CPP
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Enums/EZMR_GameEnum.h"
+#include "FZMR_ResourceStack.generated.h"
+
+USTRUCT(BlueprintType)
+struct FZMR_ResourceStack
+{
+  GENERATED_BODY()
+
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
+  EResourceType ResourceType = EResourceType::None;
+
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
+  int32 Quantity = 0;
+  
+  // optional but VERY useful later
+  UPROPERTY(EditAnywhere, BlueprintReadOnly)
+  float AmountPerCycle = 0.f;
+};
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -14,9 +43,6 @@ USTRUCT(BlueprintType)
 struct FZMR_BuildUIMenuItem : public FTableRowBase
 {
   GENERATED_BODY()
-  
-  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI|Build Menu Item")
-  int32 BuildingID = 0;
   
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI|Build Menu Item")
   EBuildingType BuildingType = EBuildingType::None;
@@ -53,3 +79,5 @@ struct FZMR_BuildUIMenuItem : public FTableRowBase
   TArray<FZMR_ResourceStack> OutputResources;
 
 };
+
+```

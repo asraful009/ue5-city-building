@@ -3,15 +3,15 @@
 UENUM(Blueprintable)
 enum class EZMR_GameSpeedEnum : uint8
 {
-  Pause UMETA(DisplayName="Pause"),
   Normal UMETA(DisplayName="Normal"),
   Fast UMETA(DisplayName="Fast"),
-  VeryFast UMETA(DisplayName="VeryFast")
+  VeryFast UMETA(DisplayName="VeryFast"),
+  Pause UMETA(DisplayName="Pause"),
 };
 
 UENUM(BlueprintType)
 enum class EZMR_WalkerStateEnum : uint8
-{
+{ 
   Idle UMETA(DisplayName="Idle"),
   MovingToTarget UMETA(DisplayName="MovingToTarget"),
   Working UMETA(DisplayName="Working"),
@@ -21,6 +21,8 @@ enum class EZMR_WalkerStateEnum : uint8
 UENUM(BlueprintType)
 enum class EBuildingType : uint8
 {
+  None        UMETA(DisplayName = "None"),
+  
   Residential UMETA(DisplayName="Residential"),
   Service     UMETA(DisplayName="Service"),
   Production  UMETA(DisplayName="Production"),
