@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "ZMR_PlayerController.generated.h"
+class AZMR_BuildingBase;
 class UZMR_BuildMenuWidget;
 class AZMR_PlayerCameraPawn;
 class AZMR_WalkerBase;
@@ -85,6 +86,9 @@ private:
   UPROPERTY()
   TWeakObjectPtr<AZMR_WalkerBase> LocalWalkerActorRef;
   
+  UPROPERTY()
+  TWeakObjectPtr<AZMR_BuildingBase> CurrentPreviewBuilding;
+  
 public:
   AZMR_PlayerController();
   
@@ -93,25 +97,47 @@ protected:
   virtual void BeginPlay() override;
   virtual void SetupInputComponent() override;
   virtual void Tick(float DeltaTime) override;
+
+public:
+  UFUNCTION()
+  void StartPlacingBuilding(const TSubclassOf<AZMR_BuildingBase> NewPreviewBuildingClass);
+
 private:
+  UFUNCTION()
   void FocusCameraOnSelected();
 
   // Camera edge scroll
+  UFUNCTION()
   void HandleEdgeScroll(float DeltaTime);
   
+  UFUNCTION()
   void Move(const FInputActionValue& Value);
   
+  UFUNCTION()
   void Zoom(const FInputActionValue& Value);
+  
+  UFUNCTION()
   void RotateCamera(const FInputActionValue& Value);
   
-  
+  UFUNCTION()
   void MouseDragStart(const FInputActionValue& Value);
+  
+  UFUNCTION()
   void MouseDragStop(const FInputActionValue& Value);
+  
+  UFUNCTION()
   void MouseDragMove(const FInputActionValue& Value);
   
+  UFUNCTION()
   void MouseSelectObject();
   
+  
   void MouseSelectedObject(const TObjectPtr<AActor> NewSelectedObject);
+  
+  UFUNCTION()
   void MouseDeSelectedObject();
+  
+  UFUNCTION()
+  void MoveBuildingWithMouse(const float DeltaTime);
   
 };

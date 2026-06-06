@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "Blueprint/UserWidget.h"
+#include "Building/ZMR_BuildingBase.h"
 #include "Building/ZMR_BuildMenuWidget.h"
 #include "Common/ZMR_ObjectSelectInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -123,6 +124,24 @@ void AZMR_PlayerController::Tick(float DeltaTime)
   if (!bIsKeyboardMoving)
   {
     HandleEdgeScroll(DeltaTime);
+  }
+  
+  if (CurrentPreviewBuilding.IsValid() && !CurrentPreviewBuilding->IsPlaced())
+  {
+    MoveBuildingWithMouse(DeltaTime);
+  }
+}
+
+void AZMR_PlayerController::StartPlacingBuilding(const TSubclassOf<AZMR_BuildingBase> NewPreviewBuildingClass)
+{
+  if (CurrentPreviewBuilding.IsValid())
+  {
+    CurrentPreviewBuilding.Reset();
+  }
+  CurrentPreviewBuilding = GetWorld()->SpawnActor<AZMR_BuildingBase>(NewPreviewBuildingClass);
+  if (CurrentPreviewBuilding.IsValid())
+  {
+    CurrentPreviewBuilding->SetPreviewMode(true);
   }
 }
 
@@ -337,5 +356,61 @@ void AZMR_PlayerController::MouseDeSelectedObject()
   {
     IZMR_ObjectSelectInterface::Execute_OnDeselected(MouseSelectedActorRef.Get());
     MouseSelectedActorRef.Reset();
+  }
+}
+
+void AZMR_PlayerController::MoveBuildingWithMouse(const float DeltaTime)
+{
+  if (!CurrentPreviewBuilding.IsValid()) return;
+
+  float MouseX;
+  float MouseY;
+
+  if (!GetMousePosition(MouseX, MouseY))
+  {
+    return;
+  }
+
+  FVector WorldLocation;
+  FVector WorldDirection;
+
+  if (!DeprojectScreenPositionToWorld(
+      MouseX,
+      MouseY,
+      WorldLocation,
+      WorldDirection))
+  {
+    return;
+  }
+
+  FVector Start = WorldLocation;
+  FVector End = Start + (WorldDirection * 50000.f);
+
+  FHitResult HitResult;
+
+  FCollisionQueryParams Params;
+  Params.AddIgnoredActor(CurrentPreviewBuilding.Get());
+
+  const bool bHit = GetWorld()->LineTraceSingleByChannel(
+      HitResult,
+      Start,
+      End,
+      ECC_Visibility,
+      Params
+  );
+
+  if (bHit)
+  {
+    FVector NewLocation = HitResult.ImpactPoint;
+
+    // Optional Grid Snap
+    const float GridSize = 100.f;
+
+    NewLocation.X = FMath::GridSnap(NewLocation.X, GridSize);
+    NewLocation.Y = FMath::GridSnap(NewLocation.Y, GridSize);
+
+
+    
+    CurrentPreviewBuilding->SetActorLocation(NewLocation);
   }
 }

@@ -41,10 +41,16 @@ void AZMR_BuildingBase::BeginPlay()
   BuildingId = BuildingIdMax;
 
   
-  if (BuildingMesh && NormalMaterial)
+  if (BuildingMesh)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Setting Normal Material for Building ID: %i"), BuildingId);
-    BuildingMesh->SetMaterial(0, NormalMaterial);
+    if (NormalMaterial && bIsPlaced)
+    {
+      UE_LOG(LogTemp, Warning, TEXT("Setting Normal Material for Building ID: %i"), BuildingId);
+      BuildingMesh->SetMaterial(0, NormalMaterial);
+    } else if (!bIsPlaced && PlacementMaterial)
+    {
+      SetPreviewMode(bIsPlaced);;
+    } 
   }
 
 }
@@ -72,6 +78,7 @@ void AZMR_BuildingBase::Tick(float DeltaTime)
       true
     );
   }
+
 }
 
 void AZMR_BuildingBase::OnPlaced()
@@ -128,3 +135,28 @@ void AZMR_BuildingBase::OnDeselected_Implementation()
   }
   UE_LOG(LogTemp, Warning, TEXT("Building ID [ %i ] : DeSelected"), BuildingId);
 }
+
+void AZMR_BuildingBase::SetPreviewMode(const bool bPreview)
+{ 
+  bIsPlaced = !bPreview;
+  
+  if (bPreview)
+  {
+    BuildingMesh->SetCollisionEnabled(
+        ECollisionEnabled::NoCollision);
+
+    BuildingMesh->SetMaterial(0, PlacementMaterial);
+
+    SetActorEnableCollision(false);
+  }
+  else
+  {
+    BuildingMesh->SetCollisionEnabled(
+        ECollisionEnabled::QueryAndPhysics);
+
+    BuildingMesh->SetMaterial(0, NormalMaterial);
+
+    SetActorEnableCollision(true);
+  }
+}
+

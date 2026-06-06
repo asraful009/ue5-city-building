@@ -29,6 +29,9 @@ public:
   FIntPoint FootprintSize = FIntPoint(1,1);
   
   UPROPERTY(EditDefaultsOnly, Category="Building|Material")
+  TObjectPtr<UMaterialInterface> PlacementMaterial;
+  
+  UPROPERTY(EditDefaultsOnly, Category="Building|Material")
   TObjectPtr<UMaterialInterface> NormalMaterial;
 
   UPROPERTY(EditDefaultsOnly, Category="Building|Material")
@@ -46,7 +49,7 @@ private:
   int32 BuildingId;
 
   UPROPERTY(VisibleAnywhere, Category="Building")
-  bool bIsPlaced;
+  bool bIsPlaced = false;
 
   UPROPERTY(VisibleAnywhere, Category="Building|Grid")
   FIntPoint GridPosition = FIntPoint::ZeroValue;
@@ -63,6 +66,13 @@ public:
   // Called every frame
   virtual void Tick(float DeltaTime) override;
 
+  UFUNCTION(BlueprintCallable)
+  void SetPreviewMode(bool bPreview);
+  
+  
+  UFUNCTION(BlueprintPure)
+  bool IsPlaced() const { return bIsPlaced; }
+  
   UFUNCTION(BlueprintCallable)
   virtual void OnPlaced();
 
@@ -90,4 +100,7 @@ public:
   
   virtual void OnSelected_Implementation() override;
   virtual void OnDeselected_Implementation() override;
+  
+private:
+
 };

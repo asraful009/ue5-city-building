@@ -3,6 +3,8 @@
 
 #include "Building/ZMR_BuildMenuItemWidget.h"
 
+#include "Building/ZMR_BuildingBase.h"
+#include "Common/ZMR_PlayerController.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -44,7 +46,19 @@ void UZMR_BuildMenuItemWidget::NativeDestruct()
 
 void UZMR_BuildMenuItemWidget::HandleBuildButtonClickEvent()
 {
+  if (CachedItem.BuildingClass == nullptr)
+  {
+    return;
+  }
+  
   int32 ID = CachedItem.BuildingID;
 
-  UE_LOG(LogTemp, Warning, TEXT("BuildingID clicked: %d"), ID);
+  UE_LOG(LogTemp, Warning, TEXT("BuildingID clicked: %d :: %s"), ID, *CachedItem.BuildingClass->GetName());
+  APlayerController* PC = GetWorld()->GetFirstPlayerController();
+  AZMR_PlayerController* ZMR_PC = Cast<AZMR_PlayerController>(PC);
+  if (!ZMR_PC)
+  {
+    return;
+  }
+  ZMR_PC->StartPlacingBuilding(CachedItem.BuildingClass);
 }
