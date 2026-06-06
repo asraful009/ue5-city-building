@@ -155,7 +155,7 @@ void AZMR_BuildingBase::SetPreviewMode(const bool bPreview)
         ECollisionEnabled::QueryAndPhysics);
 
     BuildingMesh->SetMaterial(0, NormalMaterial);
-
+    UE_LOG(LogTemp, Warning, TEXT("Building ID [ %i ] : Placed"), BuildingId);
     SetActorEnableCollision(true);
   }
 }

@@ -16,6 +16,14 @@ struct FInputActionValue;
 /**
  * 
  */
+
+UENUM(BlueprintType)
+enum class EPlayerMode : uint8
+{
+  Select,
+  PlaceBuilding
+};
+
 UCLASS()
 class ZMR_API AZMR_PlayerController : public APlayerController
 {
@@ -60,6 +68,9 @@ protected:
   
   UPROPERTY(EditAnywhere, Category="UI|Building")
   TSubclassOf<UZMR_BuildMenuWidget> BuildMenuClass;
+  
+  UPROPERTY()
+  EPlayerMode CurrentMode = EPlayerMode::Select;
   
 private:
   

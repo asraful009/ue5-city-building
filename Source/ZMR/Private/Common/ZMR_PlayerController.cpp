@@ -51,17 +51,17 @@ void AZMR_PlayerController::BeginPlay()
 
   for (AActor* Actor : Temp)
   {
-     AZMR_WalkerBase* Walker = Cast<AZMR_WalkerBase>(Actor);
-     if (Walker)
-     {
-       LocalWalkerActorRef = Walker;
-       break;
-     };
+    AZMR_WalkerBase* Walker = Cast<AZMR_WalkerBase>(Actor);
+    if (Walker)
+    {
+      LocalWalkerActorRef = Walker;
+      break;
+    };
   }
-  
+
   auto Menu = CreateWidget<UZMR_BuildMenuWidget>(GetWorld(), BuildMenuClass);
   Menu->AddToViewport();
-}                         
+}
 
 void AZMR_PlayerController::SetupInputComponent()
 {
@@ -125,7 +125,7 @@ void AZMR_PlayerController::Tick(float DeltaTime)
   {
     HandleEdgeScroll(DeltaTime);
   }
-  
+
   if (CurrentPreviewBuilding.IsValid() && !CurrentPreviewBuilding->IsPlaced())
   {
     MoveBuildingWithMouse(DeltaTime);
@@ -142,7 +142,9 @@ void AZMR_PlayerController::StartPlacingBuilding(const TSubclassOf<AZMR_Building
   if (CurrentPreviewBuilding.IsValid())
   {
     CurrentPreviewBuilding->SetPreviewMode(true);
+    CurrentMode = EPlayerMode::PlaceBuilding;
   }
+  
 }
 
 void AZMR_PlayerController::FocusCameraOnSelected()
@@ -303,24 +305,43 @@ void AZMR_PlayerController::MouseDragMove(const FInputActionValue& Value)
 
 void AZMR_PlayerController::MouseSelectObject()
 {
-  FHitResult Hit;
-  bool bHit = 
-    GetHitResultUnderCursor(
-      ECC_Visibility, 
-      false, 
-      Hit);
-  if (!bHit)
+  switch (CurrentMode)
   {
-    MouseDeSelectedObject();
-    return;
-  }
-  if (const TObjectPtr<AActor> HitActor = Hit.GetActor())
-  {
-    MouseSelectedObject(HitActor); // 👈 THIS is what you missed
-  }
-  else
-  {
-    MouseDeSelectedObject();
+  case EPlayerMode::PlaceBuilding:
+    if (CurrentPreviewBuilding.IsValid())
+    {
+      if (!CurrentPreviewBuilding->IsPlaced())
+      {
+        CurrentPreviewBuilding->SetPreviewMode(false);
+      }
+      CurrentPreviewBuilding.Reset();
+      CurrentMode = EPlayerMode::Select;
+      
+      return; 
+    }
+    break;
+
+  case EPlayerMode::Select:
+    FHitResult Hit;
+    bool bHit =
+      GetHitResultUnderCursor(
+        ECC_Visibility,
+        false,
+        Hit);
+    if (!bHit)
+    {
+      MouseDeSelectedObject();
+      return;
+    }
+    if (const TObjectPtr<AActor> HitActor = Hit.GetActor())
+    {
+      MouseSelectedObject(HitActor); // 👈 THIS is what you missed
+    }
+    else
+    {
+      MouseDeSelectedObject();
+    }
+    break;
   }
 }
 
@@ -330,14 +351,14 @@ void AZMR_PlayerController::MouseSelectedObject(const TObjectPtr<AActor> NewSele
   {
     return;
   }
-  if (MouseSelectedActorRef.IsValid() 
+  if (MouseSelectedActorRef.IsValid()
     && MouseSelectedActorRef->Implements<UZMR_ObjectSelectInterface>())
   {
     IZMR_ObjectSelectInterface::Execute_OnDeselected(MouseSelectedActorRef.Get());
     MouseSelectedActorRef.Reset();
   }
-  
-  if (NewSelectedObject 
+
+  if (NewSelectedObject
     && NewSelectedObject->Implements<UZMR_ObjectSelectInterface>())
   {
     MouseSelectedActorRef = NewSelectedObject;
@@ -351,7 +372,7 @@ void AZMR_PlayerController::MouseSelectedObject(const TObjectPtr<AActor> NewSele
 
 void AZMR_PlayerController::MouseDeSelectedObject()
 {
-  if (MouseSelectedActorRef.IsValid() 
+  if (MouseSelectedActorRef.IsValid()
     && MouseSelectedActorRef->Implements<UZMR_ObjectSelectInterface>())
   {
     IZMR_ObjectSelectInterface::Execute_OnDeselected(MouseSelectedActorRef.Get());
@@ -361,7 +382,7 @@ void AZMR_PlayerController::MouseDeSelectedObject()
 
 void AZMR_PlayerController::MoveBuildingWithMouse(const float DeltaTime)
 {
-  if (!CurrentPreviewBuilding.IsValid()) return;
+  if (CurrentMode == EPlayerMode::Select || !CurrentPreviewBuilding.IsValid()) return;
 
   float MouseX;
   float MouseY;
@@ -375,10 +396,10 @@ void AZMR_PlayerController::MoveBuildingWithMouse(const float DeltaTime)
   FVector WorldDirection;
 
   if (!DeprojectScreenPositionToWorld(
-      MouseX,
-      MouseY,
-      WorldLocation,
-      WorldDirection))
+    MouseX,
+    MouseY,
+    WorldLocation,
+    WorldDirection))
   {
     return;
   }
@@ -392,11 +413,11 @@ void AZMR_PlayerController::MoveBuildingWithMouse(const float DeltaTime)
   Params.AddIgnoredActor(CurrentPreviewBuilding.Get());
 
   const bool bHit = GetWorld()->LineTraceSingleByChannel(
-      HitResult,
-      Start,
-      End,
-      ECC_Visibility,
-      Params
+    HitResult,
+    Start,
+    End,
+    ECC_Visibility,
+    Params
   );
 
   if (bHit)
@@ -410,7 +431,6 @@ void AZMR_PlayerController::MoveBuildingWithMouse(const float DeltaTime)
     NewLocation.Y = FMath::GridSnap(NewLocation.Y, GridSize);
 
 
-    
     CurrentPreviewBuilding->SetActorLocation(NewLocation);
   }
 }
